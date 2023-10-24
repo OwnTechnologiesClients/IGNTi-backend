@@ -136,7 +136,7 @@ exports.getResultSetById = async (req, res) => {
             matchedQuestion &&
             resultSetItem.selectedOption === matchedQuestion.correctOption
           ) {
-            result.numCorrectAnswers += 1; 
+            result.numCorrectAnswers += 1;
           }
         });
 
@@ -144,7 +144,7 @@ exports.getResultSetById = async (req, res) => {
       }
     });
 
-    req.body.subjectResults = finalResult
+    req.body.subjectResults = finalResult;
 
     const alreadySet = await FinalResult.find({
       semesterNumber: req.body.semesterNumber,
@@ -156,13 +156,63 @@ exports.getResultSetById = async (req, res) => {
       return res.send({
         success: true,
         message: `Final Result Set and need permission from admin to declare!`,
-        data: result
+        data: result,
       });
     }
 
     return res.send({
       success: true,
-      message: `Final Result already set navigate for further changes in result!`,
+      message: `Final Result already set navigate for further changes`,
+      data: alreadySet,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// UPDATE-EXAM-SET-BY-ID
+exports.updateResultSetById = async (req, res) => {
+  try {
+    const alreadySet = await FinalResult.find({
+      semesterNumber: req.body.semesterNumber,
+      studentId: req.body.studentId,
+      courseName: req.body.courseName,
+    });
+
+    if (alreadySet.length === 0) {
+      return res.send({
+        success: false,
+        message: "No result found for the given criteria",
+      });
+    }
+
+    for (const result of alreadySet) {
+      req.body.updatedSubjectResults.forEach((updatedSubject) => {
+        const subject = result.subjectResults.find(
+          (subject) => subject.subjectName === updatedSubject.subjectName
+        );
+
+        if (subject) {
+          const totalNumQuestions = subject.totalNumQuestions;
+          const newNumCorrectAnswers = Math.min(
+            updatedSubject.numCorrectAnswers,
+            totalNumQuestions
+          );
+
+          subject.numCorrectAnswers = newNumCorrectAnswers;
+          result.isDeclared = true;
+        }
+      });
+
+      await result.save();
+    }
+
+    return res.send({
+      success: true,
+      message: "Final Result updated successfully",
       data: alreadySet,
     });
   } catch (error) {
