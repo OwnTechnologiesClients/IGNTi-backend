@@ -1,15 +1,80 @@
 const express = require("express");
-const { registerStudent, loginStudent, getStudent } = require("../controllers/studentController");
+const Student = require("../models/studentModel");
+const {
+    registerStudentByEmail,
+  loginStudent,
+  getStudent,
+  registerStudentById,
+} = require("../controllers/studentController");
+const multer = require("multer");
 const router = express.Router();
 
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/");
+  },
+  filename: (req, file, cb) => {
+    // const uniqueSuffix = Date.now();
+    const ext = file.mimetype.split("/")[1];
+    // cb(null, uniqueSuffix+file.originalname);
+    cb(null, `files-admin-${Date.now()}.jpg`);
+  },
+});
+
+const multerFilter = (req, file, cb) => {
+  if (
+    file.mimetype.split("/")[1] === "jpeg" ||
+    file.mimetype.split("/")[1] === "png" ||
+    file.mimetype.split("/")[1] === "jpg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(new Error("Not a Image File!!"), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
 
 // STUDENT-REGISTRATION
-router.route("/register").post(registerStudent);
+// router.route("/register").post(registerStudent);
+router.post("/register", upload.single("fileName"), async (req, res) => {
+  try {
+    const studentExists = await Student.findOne({ email: req.body.email });
+    if (studentExists) {
+      return res.send({
+        success: false,
+        message: "Email is already registered with us!",
+      });
+    }
+    req.body.imageFile = req.file.filename;
+    const student = new Student(req.body);
+    await student.save();
+
+    return res.send({
+      success: true,
+      message: "Student registered Successfully",
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
 
 // STUDENT_LOGIN
 router.route("/login").post(loginStudent);
 
 // GET-STUDENT-DETAILS-BY-TOKEN
 router.route("/get-student").get(getStudent);
+
+// GET-STUDENT-DETAILS-BY-EMAIL
+router.route("/get-student-id").post(registerStudentByEmail);
+
+// GET-STUDENT-DETAILS-BY-ID
+router.route("/get-student-id-detail").post(registerStudentById);
 
 module.exports = router;

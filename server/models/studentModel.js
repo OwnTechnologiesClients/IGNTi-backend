@@ -43,6 +43,9 @@ const userSchema = mongoose.Schema(
     courseName: {
         type: String,
         required: true,
+    },
+    imageFile: {
+      type: String,
     }
   },
   {

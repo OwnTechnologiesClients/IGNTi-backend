@@ -2,22 +2,45 @@ const Student = require("../models/studentModel");
 const jwt = require("jsonwebtoken");
 
 // STUDENT-REGISTRATION
-exports.registerStudent = async (req, res) => {
+exports.registerStudentByEmail = async (req, res) => {
   try {
+    // console.log(req.body)
     const studentExists = await Student.findOne({ email: req.body.email });
-    if (studentExists) {
+    if (!studentExists) {
       return res.send({
         success: false,
-        message: "Email is already registered with us!",
+        message: "Student not found!",
       });
     }
 
-    const student = new Student(req.body);
-    await student.save();
+    return res.send({
+      success: true,
+      message: "Student fetched Successfully",
+      data: studentExists
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.registerStudentById = async (req, res) => {
+  try {
+    // console.log(req.body)
+    const studentExists = await Student.findOne({ _id: req.body.id });
+    if (!studentExists) {
+      return res.send({
+        success: false,
+        message: "Student not found!",
+      });
+    }
 
     return res.send({
       success: true,
-      message: "Student registered Successfully",
+      message: "Student fetched Successfully",
+      data: studentExists
     });
   } catch (error) {
     return res.send({
