@@ -1,5 +1,5 @@
 const express = require("express");
-const { addCourse, getCourse, updateCourse, deleteCourse } = require("../controllers/courseController");
+const { addCourse, getCourse, updateCourse, deleteCourse, getCourseName } = require("../controllers/courseController");
 const router = express.Router();
 
 
@@ -8,6 +8,9 @@ router.route("/add-course").post(addCourse);
 
 // GET-COURSE-DETAILS
 router.route("/get-Course").post(getCourse);
+
+// GET-ALL-COURSE-NAME
+router.route("/name-Course-all").post(getCourseName);
 
 // UPDATE-COURSE-DETAILS
 router.route("/update-Course/:id").put(updateCourse);

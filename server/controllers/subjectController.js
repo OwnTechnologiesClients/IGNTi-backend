@@ -116,7 +116,7 @@ exports.addSubject = async (req, res) => {
 
     if(isDuplicate) {
       return res.send({
-      success: true,
+      success: false,
       message: "subjects already exists in semester",
       data: semesterToUpdate.subjects,
     });
@@ -131,7 +131,6 @@ exports.addSubject = async (req, res) => {
       success: true,
       message: "subjects added successfully",
       data: semesterToUpdate.subjects,
-      data1: isDuplicate
     });
   } catch (error) {
     return res.send({
@@ -177,6 +176,54 @@ exports.deleteSubject = async (req, res) => {
       success: true,
       message: "subjects updated successfully",
       data: semesterToUpdate,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// DELETE-PARTICULAR-SUBJECT
+exports.deleteParticularSubject = async (req, res) => {
+  try {
+    
+    const courseName = req.body.courseName;
+    const semesterNumber = req.body.semesterNumber;
+    const subjectName = req.body.subjectName;
+
+    const course = await Course.findOne({ courseName });
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    // Find the specified semester in the course
+    const semester = course.semesters.find(s => s.semesterNumber === semesterNumber);
+
+    if (!semester) {
+      return res.status(404).json({ message: "Semester not found" });
+    }
+
+    // Find the subject to delete in the semester
+    const subjectIndex = semester.subjects.findIndex(subject => subject.subjectName === subjectName);
+
+    if (subjectIndex === -1) {
+      return res.status(404).json({ message: "Subject not found in the specified semester" });
+    }
+
+    // Remove the subject from the semester's subjects array
+    semester.subjects.splice(subjectIndex, 1);
+
+    // Save the updated course
+    await course.save();
+
+
+    return res.send({
+      success: true,
+      message: "subjects updated successfully",
+      data: course,
     });
   } catch (error) {
     return res.send({
