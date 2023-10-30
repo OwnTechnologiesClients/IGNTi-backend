@@ -109,3 +109,23 @@ exports.getStudent = async (req, res) => {
       });
     }
   };
+
+
+  // GET-STUDENT-ALL-ID
+exports.allStudentId = async (req, res) => {
+  try {
+    const students = await Student.find({}, "_id");
+    const studentIds = students.map((student) => student._id);
+
+    return res.send({
+      success: true,
+      message: "Student details fetched successfully",
+      data: studentIds,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};

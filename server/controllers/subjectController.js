@@ -222,7 +222,7 @@ exports.deleteParticularSubject = async (req, res) => {
 
     return res.send({
       success: true,
-      message: "subjects updated successfully",
+      message: "subjects deleted successfully",
       data: course,
     });
   } catch (error) {

@@ -5,6 +5,7 @@ const {
   loginStudent,
   getStudent,
   registerStudentById,
+  allStudentId,
 } = require("../controllers/studentController");
 const multer = require("multer");
 const router = express.Router();
@@ -76,5 +77,8 @@ router.route("/get-student-id").post(registerStudentByEmail);
 
 // GET-STUDENT-DETAILS-BY-ID
 router.route("/get-student-id-detail").post(registerStudentById);
+
+// GET-STUDENT-ALL-ID
+router.route("/get-student-all-id").get(allStudentId);
 
 module.exports = router;

@@ -95,7 +95,7 @@ exports.getResultSetById = async (req, res) => {
     }
 
     const examSet = await ExamSet.find({
-      courseName: "Btech CSE",
+      courseName: req.body.courseName,
       semesterNumber: resultOfStudent[0].semesterNumber,
     });
 
@@ -114,6 +114,7 @@ exports.getResultSetById = async (req, res) => {
         correctOption: question.correctOption,
       })),
     }));
+
 
     const finalResult = [];
 
