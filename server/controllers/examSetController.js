@@ -60,6 +60,69 @@ exports.addExamSet = async (req, res) => {
     }
 
     //------------------------------
+
+    const questionTextCountMap = {};
+    const duplicateQuestions = [];
+
+    req.body.questions.forEach((question, index) => {
+      const questionText = question.questionText;
+      if (questionTextCountMap[questionText]) {
+        const existingQuestionIndex = questionTextCountMap[questionText] - 1;
+        duplicateQuestions.push({
+          questionNumber: index + 1,
+          duplicateOf: existingQuestionIndex + 1,
+          questionText: questionText,
+        });
+      } else {
+        questionTextCountMap[questionText] = index + 1;
+      }
+    });
+
+    if (duplicateQuestions.length > 0) {
+      const message = duplicateQuestions.map((duplicate) => {
+        return `Question No ${duplicate.questionNumber} is a duplicate of Question No ${duplicate.duplicateOf}. Question Text: "${duplicate.questionText}"`;
+      });
+      return res.send({
+        success: false,
+        message: message,
+      });
+    }
+
+    const optionTextMap = {};
+
+    const duplicateOptions = req.body.questions.reduce(
+      (duplicates, question, questionIndex) => {
+        const { questionText, options } = question;
+        options.forEach((option, optionIndex) => {
+          const { optionText } = option;
+          const key = `${questionText}:${optionText}`;
+          if (optionTextMap[key] === undefined) {
+            optionTextMap[key] = [questionIndex];
+          } else {
+            optionTextMap[key].push(questionIndex);
+            duplicates.push({
+              questionNo: questionIndex + 1,
+              questionText,
+              optionText,
+            });
+          }
+        });
+        return duplicates;
+      },
+      []
+    );
+
+    if (duplicateOptions.length > 0) {
+      const message = duplicateOptions.map((duplicate) => {
+        return `Question No ${duplicate.questionNo}: "${duplicate.questionText}" has duplicate option "${duplicate.optionText}"`;
+      });
+      return res.send({
+        success: false,
+        message: message,
+      });
+    }
+
+    //------------------------------
     if (examSetExists) {
       examSetExists.questions = req.body.questions;
       await examSetExists.save();
@@ -99,7 +162,7 @@ exports.addExamSet = async (req, res) => {
     let xx = 0;
     for (const question of req.body.questions) {
       const questionText = question.questionText;
-      xx = xx+1;
+      xx = xx + 1;
 
       for (const option of question.options) {
         const optionText = option.optionText;
@@ -110,7 +173,6 @@ exports.addExamSet = async (req, res) => {
           return res.send({
             success: false,
             message: `In Question ${xx}. ("${questionText}") - option ("${optionText}") is repeated in ${req.body.courseName} - ${req.body.semesterNumber} semester (${req.body.subjectName})`,
-
           });
         }
         optionTextCount[key] = 1;
@@ -242,15 +304,16 @@ exports.deleteExamSetQuestion = async (req, res) => {
 // DELETE-EXAM-SET
 exports.deleteExamSet = async (req, res) => {
   try {
-    const deleteResult = await ExamSet.deleteMany({ courseName: req.body.courseName });
+    const deleteResult = await ExamSet.deleteMany({
+      courseName: req.body.courseName,
+    });
 
     if (deleteResult.deletedCount === 0) {
       return res.send({
         success: false,
-        message: `Invalid Course name!`
+        message: `Invalid Course name!`,
       });
     }
-
 
     return res.send({
       success: true,

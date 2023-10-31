@@ -115,7 +115,6 @@ exports.getResultSetById = async (req, res) => {
       })),
     }));
 
-
     const finalResult = [];
 
     resultData.forEach((data1Item) => {
@@ -159,6 +158,11 @@ exports.getResultSetById = async (req, res) => {
         message: `Final Result Set and need permission from admin to declare!`,
         data: result,
       });
+    }
+
+    if (!alreadySet[0].isDeclared) {
+      alreadySet[0].subjectResults = finalResult;
+      await alreadySet[0].save();
     }
 
     return res.send({
