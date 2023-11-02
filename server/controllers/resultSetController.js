@@ -227,3 +227,42 @@ exports.updateResultSetById = async (req, res) => {
     });
   }
 };
+
+exports.updateDeclared = async (req, res) => {
+  try {
+    const alreadySet = await FinalResult.findOne({
+      semesterNumber: req.body.semesterNumber,
+      studentId: req.body.studentId,
+      courseName: req.body.courseName,
+    });
+
+    if (alreadySet.length === 0) {
+      return res.send({
+        success: false,
+        message: "No result found for the given criteria",
+      });
+    }
+
+    if(!alreadySet.isDeclared) {
+      return res.send({
+        success: false,
+        message: "Result Update mode is already on on",
+        data: alreadySet,
+      });
+    }
+
+    alreadySet.isDeclared = false;
+    await alreadySet.save();
+
+    return res.send({
+      success: true,
+      message: "Result Update mode on",
+      data: alreadySet,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
