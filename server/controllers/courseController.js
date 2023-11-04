@@ -156,3 +156,38 @@ exports.deleteCourse = async (req, res) => {
     });
   }
 };
+
+
+exports.verifyPassword = async (req, res) => {
+  try {
+    const courseName = req.body.courseName;
+    const password = req.body.password;
+    const courseExists = await Course.findOne({
+      coursePassword: password,
+    });
+    if (!courseExists) {
+      return res.send({
+        success: false,
+        message: "Wrong Password!",
+      });
+    }
+
+    if (courseExists.courseName !== courseName) {
+      return res.send({
+        success: false,
+        message: "Please select right course!",
+      });
+    }
+
+
+    return res.send({
+      success: true,
+      message: "Course fetched successfully",
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};

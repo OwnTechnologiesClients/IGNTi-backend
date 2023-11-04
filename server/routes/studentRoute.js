@@ -8,6 +8,7 @@ const {
   registerStudentById,
   allStudentId,
   allStudentCourse,
+  verifyEnrollNumber,
 } = require("../controllers/studentController");
 const multer = require("multer");
 const router = express.Router();
@@ -94,6 +95,8 @@ router.route("/get-student-all-id").get(allStudentId);
 
 // GET-STUDENT-ALL-COURSE
 router.route("/get-student-all-course").post(allStudentCourse);
+
+router.route("/verify-student").post(verifyEnrollNumber);
 
 
 

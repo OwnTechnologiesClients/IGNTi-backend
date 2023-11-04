@@ -158,3 +158,36 @@ exports.allStudentCourse = async (req, res) => {
     });
   }
 };
+
+
+exports.verifyEnrollNumber = async (req, res) => {
+  try {
+    const enrollNo = req.body.enrollNo;
+
+    const students = await Student.find({ enrollNo: enrollNo });
+
+    if(students.length == 0) {
+      return res.send({
+        success: false,
+        message: "Enrollment number does not exist!",
+      });
+    }
+
+    if(students[0].courseName !== req.body.courseName) {
+      return res.send({
+        success: false,
+        message: "You are not enroll in this course!",
+      });
+    }
+
+    return res.send({
+      success: true,
+      message: "Student details fetched successfully",
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
