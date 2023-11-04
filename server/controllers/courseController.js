@@ -88,6 +88,7 @@ exports.updateCourse = async (req, res) => {
         noOfSemester: req.body.noOfSemester,
         duration: req.body.duration,
         fees: req.body.fees,
+        coursePassword: req.body.coursePassword
       },
       { new: true }
     );

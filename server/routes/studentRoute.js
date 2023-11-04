@@ -1,11 +1,13 @@
 const express = require("express");
 const Student = require("../models/studentModel");
+const EnrollNumber = require("../models/extraCourseModel");
 const {
     registerStudentByEmail,
   loginStudent,
   getStudent,
   registerStudentById,
   allStudentId,
+  allStudentCourse,
 } = require("../controllers/studentController");
 const multer = require("multer");
 const router = express.Router();
@@ -51,6 +53,15 @@ router.post("/register", upload.single("fileName"), async (req, res) => {
       });
     }
     req.body.imageFile = req.file.filename;
+
+    const course = await EnrollNumber.findOne();
+    req.body.enrollNo = course.enNumber;
+    let enNumber = parseInt(course.enNumber, 10);
+    enNumber += 1;
+    const enNumberStr = enNumber.toString().padStart(8, "0");
+    course.enNumber = enNumberStr;
+    await course.save();
+
     const student = new Student(req.body);
     await student.save();
 
@@ -80,5 +91,10 @@ router.route("/get-student-id-detail").post(registerStudentById);
 
 // GET-STUDENT-ALL-ID
 router.route("/get-student-all-id").get(allStudentId);
+
+// GET-STUDENT-ALL-COURSE
+router.route("/get-student-all-course").post(allStudentCourse);
+
+
 
 module.exports = router;

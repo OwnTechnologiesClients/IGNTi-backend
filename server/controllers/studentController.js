@@ -16,7 +16,7 @@ exports.registerStudentByEmail = async (req, res) => {
     return res.send({
       success: true,
       message: "Student fetched Successfully",
-      data: studentExists
+      data: studentExists,
     });
   } catch (error) {
     return res.send({
@@ -40,7 +40,7 @@ exports.registerStudentById = async (req, res) => {
     return res.send({
       success: true,
       message: "Student fetched Successfully",
-      data: studentExists
+      data: studentExists,
     });
   } catch (error) {
     return res.send({
@@ -88,33 +88,62 @@ exports.loginStudent = async (req, res) => {
 
 // GET-STUDENT-DETAILS-BY-TOKEN
 exports.getStudent = async (req, res) => {
-    try {
-        req.body.userId = "653374fa12383679b1411abb"
-      const student = await Student.findOne({_id: req.body.userId});
-      if (!student) {
-        return res.send({
-          success: false,
-          message: "Student not found",
-        });
-      }
-      return res.send({
-        success: true,
-        message: "Student details fetched successfully",
-        data: student,
-      });
-    } catch (error) {
+  try {
+    req.body.userId = "653374fa12383679b1411abb";
+    const student = await Student.findOne({ _id: req.body.userId });
+    if (!student) {
       return res.send({
         success: false,
-        message: error.message,
+        message: "Student not found",
       });
     }
-  };
+    return res.send({
+      success: true,
+      message: "Student details fetched successfully",
+      data: student,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-
-  // GET-STUDENT-ALL-ID
+// GET-STUDENT-ALL-ID
 exports.allStudentId = async (req, res) => {
   try {
     const students = await Student.find({}, "_id");
+    const studentIds = students.map((student) => student._id);
+
+    return res.send({
+      success: true,
+      message: "Student details fetched successfully",
+      data: studentIds,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+// GET-STUDENT-ALL-COURSE
+exports.allStudentCourse = async (req, res) => {
+  try {
+    const courseName = req.body.courseName;
+
+    const students = await Student.find({ courseName });
+
+    if(students.length == 0) {
+      return res.send({
+        success: false,
+        message: "No Student registered with this course!",
+      });
+    }
+
     const studentIds = students.map((student) => student._id);
 
     return res.send({

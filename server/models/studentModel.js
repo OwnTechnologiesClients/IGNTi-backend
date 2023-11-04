@@ -46,6 +46,11 @@ const userSchema = mongoose.Schema(
     },
     imageFile: {
       type: String,
+    },
+    enrollNo: {
+      type: String,
+      required: true,
+      unique: true,
     }
   },
   {

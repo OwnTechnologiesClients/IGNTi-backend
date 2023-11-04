@@ -26,6 +26,10 @@ const courseSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    coursePassword : {
+      type: String,
+      default: ""
+    },
     semesters: [
       {
         semesterNumber: {
