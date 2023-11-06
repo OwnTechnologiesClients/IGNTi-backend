@@ -1,4 +1,5 @@
 const Course = require("../models/courseModel");
+const ExamSet = require("../models/examSetModel");
 
 // GET-SUBJECT
 exports.getSubject = async (req, res) => {
@@ -24,10 +25,29 @@ exports.getSubject = async (req, res) => {
         message: `${req.body.semesterNumber} semester subjects will be updated soon! Please be Patience`,
       });
     }
+
+    //-------------------------
+    const questionLengths = await Promise.all(
+      courseExists.semesters[req.body.semesterNumber - 1].subjects.map(
+        async (subjectName) => {
+          const questions = await ExamSet.findOne({
+            courseName: req.body.courseName,
+            semesterNumber: req.body.semesterNumber,
+            subjectName: subjectName.subjectName,
+          }).select("questions");
+          return {
+            subjectName,
+            questionLength: questions ? questions.questions.length : 0,
+          };
+        }
+      )
+    );
+    //----------------------------
     return res.send({
       success: true,
       message: "subjects fetched successfully",
       data: courseExists.semesters[req.body.semesterNumber - 1],
+      data1: questionLengths,
     });
   } catch (error) {
     return res.send({
@@ -74,7 +94,7 @@ exports.updateSubject = async (req, res) => {
     return res.send({
       success: true,
       message: "subjects updated successfully",
-      data: updatedCourse.semesters[req.body.semesterNumber-1],
+      data: updatedCourse.semesters[req.body.semesterNumber - 1],
     });
   } catch (error) {
     return res.send({
@@ -108,24 +128,28 @@ exports.addSubject = async (req, res) => {
         message: `New Subject can not be added in ${req.body.semesterNumber} semester`,
       });
     }
-    
-    const semesterToUpdate = courseExists.semesters.find(semester => semester.semesterNumber === req.body.semesterNumber);
 
-    const isDuplicate = semesterToUpdate.subjects.some(subject => subject.subjectName === req.body.newSubjects[0].subjectName);
-    
+    const semesterToUpdate = courseExists.semesters.find(
+      (semester) => semester.semesterNumber === req.body.semesterNumber
+    );
 
-    if(isDuplicate) {
+    const isDuplicate = semesterToUpdate.subjects.some(
+      (subject) => subject.subjectName === req.body.newSubjects[0].subjectName
+    );
+
+    if (isDuplicate) {
       return res.send({
-      success: false,
-      message: "subjects already exists in semester",
-      data: semesterToUpdate.subjects,
-    });
+        success: false,
+        message: "subjects already exists in semester",
+        data: semesterToUpdate.subjects,
+      });
     }
 
-    semesterToUpdate.subjects = semesterToUpdate.subjects.concat(req.body.newSubjects);
+    semesterToUpdate.subjects = semesterToUpdate.subjects.concat(
+      req.body.newSubjects
+    );
 
     await courseExists.save();
-
 
     return res.send({
       success: true,
@@ -164,13 +188,14 @@ exports.deleteSubject = async (req, res) => {
         message: `Subject can not be deleted in ${req.body.semesterNumber} semester`,
       });
     }
-    
-    const semesterToUpdate = courseExists.semesters.find(semester => semester.semesterNumber === req.body.semesterNumber);
+
+    const semesterToUpdate = courseExists.semesters.find(
+      (semester) => semester.semesterNumber === req.body.semesterNumber
+    );
 
     semesterToUpdate.subjects = [];
 
     await courseExists.save();
-
 
     return res.send({
       success: true,
@@ -188,7 +213,6 @@ exports.deleteSubject = async (req, res) => {
 // DELETE-PARTICULAR-SUBJECT
 exports.deleteParticularSubject = async (req, res) => {
   try {
-    
     const courseName = req.body.courseName;
     const semesterNumber = req.body.semesterNumber;
     const subjectName = req.body.subjectName;
@@ -200,17 +224,23 @@ exports.deleteParticularSubject = async (req, res) => {
     }
 
     // Find the specified semester in the course
-    const semester = course.semesters.find(s => s.semesterNumber === semesterNumber);
+    const semester = course.semesters.find(
+      (s) => s.semesterNumber === semesterNumber
+    );
 
     if (!semester) {
       return res.status(404).json({ message: "Semester not found" });
     }
 
     // Find the subject to delete in the semester
-    const subjectIndex = semester.subjects.findIndex(subject => subject.subjectName === subjectName);
+    const subjectIndex = semester.subjects.findIndex(
+      (subject) => subject.subjectName === subjectName
+    );
 
     if (subjectIndex === -1) {
-      return res.status(404).json({ message: "Subject not found in the specified semester" });
+      return res
+        .status(404)
+        .json({ message: "Subject not found in the specified semester" });
     }
 
     // Remove the subject from the semester's subjects array
@@ -218,7 +248,6 @@ exports.deleteParticularSubject = async (req, res) => {
 
     // Save the updated course
     await course.save();
-
 
     return res.send({
       success: true,

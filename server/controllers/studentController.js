@@ -50,6 +50,30 @@ exports.registerStudentById = async (req, res) => {
   }
 };
 
+
+exports.registerStudentByEnroll = async (req, res) => {
+  try {
+    const studentExists = await Student.findOne({ enrollNo: req.body.enroll });
+    if (!studentExists) {
+      return res.send({
+        success: false,
+        message: "Student not found!",
+      });
+    }
+
+    return res.send({
+      success: true,
+      message: "Student fetched Successfully",
+      data: studentExists,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 // LOGIN-STUDENT
 exports.loginStudent = async (req, res) => {
   try {
