@@ -115,23 +115,54 @@ exports.getResultSetById = async (req, res) => {
       })),
     }));
 
+    // const finalResult = [];
+
+    // resultData.forEach((data1Item) => {
+    //   const matchedSubject = resultData2.find(
+    //     (data2Item) => data2Item.subjectName === data1Item.subjectName
+    //   );
+    //   if (matchedSubject) {
+    //     const result = {
+    //       subjectName: data1Item.subjectName,
+    //       numCorrectAnswers: 0,
+    //       totalNumQuestions: matchedSubject.questions.length,
+    //     };
+
+    //     data1Item.resultSet.forEach((resultSetItem) => {
+    //       const matchedQuestion = matchedSubject.questions.find(
+    //         (question) => question.questionText === resultSetItem.question
+    //       );
+    //       if (
+    //         matchedQuestion &&
+    //         resultSetItem.selectedOption === matchedQuestion.correctOption
+    //       ) {
+    //         result.numCorrectAnswers += 1;
+    //       }
+    //     });
+
+    //     finalResult.push(result);
+    //   }
+    // });
+
     const finalResult = [];
 
-    resultData.forEach((data1Item) => {
-      const matchedSubject = resultData2.find(
-        (data2Item) => data2Item.subjectName === data1Item.subjectName
+    resultData2.forEach((data2Item) => {
+      const matchedData1Item = resultData.find(
+        (data1Item) => data1Item.subjectName === data2Item.subjectName
       );
-      if (matchedSubject) {
+
+      if (matchedData1Item) {
         const result = {
-          subjectName: data1Item.subjectName,
+          subjectName: data2Item.subjectName,
           numCorrectAnswers: 0,
-          totalNumQuestions: matchedSubject.questions.length,
+          totalNumQuestions: data2Item.questions.length,
         };
 
-        data1Item.resultSet.forEach((resultSetItem) => {
-          const matchedQuestion = matchedSubject.questions.find(
+        matchedData1Item.resultSet.forEach((resultSetItem) => {
+          const matchedQuestion = data2Item.questions.find(
             (question) => question.questionText === resultSetItem.question
           );
+
           if (
             matchedQuestion &&
             resultSetItem.selectedOption === matchedQuestion.correctOption
@@ -141,6 +172,13 @@ exports.getResultSetById = async (req, res) => {
         });
 
         finalResult.push(result);
+      } else {
+        // If the subject doesn't exist in resultData, set totalNumQuestions to the length of the questions array from resultData2
+        finalResult.push({
+          subjectName: data2Item.subjectName,
+          numCorrectAnswers: 0,
+          totalNumQuestions: data2Item.questions.length,
+        });
       }
     });
 
@@ -243,7 +281,7 @@ exports.updateDeclared = async (req, res) => {
       });
     }
 
-    if(!alreadySet.isDeclared) {
+    if (!alreadySet.isDeclared) {
       return res.send({
         success: false,
         message: "Result Update mode is already on on",
