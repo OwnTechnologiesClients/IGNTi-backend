@@ -164,6 +164,7 @@ exports.verifyPassword = async (req, res) => {
     const password = req.body.password;
     const courseExists = await Course.findOne({
       coursePassword: password,
+      courseName: courseName
     });
     if (!courseExists) {
       return res.send({

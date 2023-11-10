@@ -207,6 +207,7 @@ exports.verifyEnrollNumber = async (req, res) => {
     return res.send({
       success: true,
       message: "Student details fetched successfully",
+      data: students,
     });
   } catch (error) {
     return res.send({
