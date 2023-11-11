@@ -168,7 +168,11 @@ exports.allStudentCourse = async (req, res) => {
       });
     }
 
-    const studentIds = students.map((student) => student._id);
+    const sortedStudents = students.sort((a, b) => {
+      return a.enrollNo.localeCompare(b.enrollNo, undefined, { numeric: true, sensitivity: 'base' });
+    });
+
+    const studentIds = sortedStudents.map((student) => student._id);
 
     return res.send({
       success: true,
