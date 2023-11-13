@@ -10,6 +10,7 @@ const {
   allStudentCourse,
   verifyEnrollNumber,
   registerStudentByEnroll,
+  deleteStudent,
 } = require("../controllers/studentController");
 const multer = require("multer");
 const router = express.Router();
@@ -54,6 +55,15 @@ router.post("/register", upload.single("fileName"), async (req, res) => {
         message: "Email is already registered with us!",
       });
     }
+
+    const studentExists2 = await Student.findOne({ mobileNumber: req.body.mobileNumber });
+    if (studentExists2) {
+      return res.send({
+        success: false,
+        message: "Contact No. is already registered with us!",
+      });
+    }
+    
     req.body.imageFile = req.file.filename;
 
     const course = await EnrollNumber.findOne();
@@ -100,6 +110,8 @@ router.route("/get-student-all-id").get(allStudentId);
 router.route("/get-student-all-course").post(allStudentCourse);
 
 router.route("/verify-student").post(verifyEnrollNumber);
+
+router.route("/delete-student-by-id/:id").delete(deleteStudent);
 
 
 

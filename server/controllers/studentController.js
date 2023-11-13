@@ -50,7 +50,6 @@ exports.registerStudentById = async (req, res) => {
   }
 };
 
-
 exports.registerStudentByEnroll = async (req, res) => {
   try {
     const studentExists = await Student.findOne({ enrollNo: req.body.enroll });
@@ -153,7 +152,6 @@ exports.allStudentId = async (req, res) => {
   }
 };
 
-
 // GET-STUDENT-ALL-COURSE
 exports.allStudentCourse = async (req, res) => {
   try {
@@ -161,7 +159,7 @@ exports.allStudentCourse = async (req, res) => {
 
     const students = await Student.find({ courseName });
 
-    if(students.length == 0) {
+    if (students.length == 0) {
       return res.send({
         success: false,
         message: "No Student registered with this course!",
@@ -169,7 +167,10 @@ exports.allStudentCourse = async (req, res) => {
     }
 
     const sortedStudents = students.sort((a, b) => {
-      return a.enrollNo.localeCompare(b.enrollNo, undefined, { numeric: true, sensitivity: 'base' });
+      return a.enrollNo.localeCompare(b.enrollNo, undefined, {
+        numeric: true,
+        sensitivity: "base",
+      });
     });
 
     const studentIds = sortedStudents.map((student) => student._id);
@@ -187,21 +188,20 @@ exports.allStudentCourse = async (req, res) => {
   }
 };
 
-
 exports.verifyEnrollNumber = async (req, res) => {
   try {
     const enrollNo = req.body.enrollNo;
 
     const students = await Student.find({ enrollNo: enrollNo });
 
-    if(students.length == 0) {
+    if (students.length == 0) {
       return res.send({
         success: false,
         message: "Enrollment number does not exist!",
       });
     }
 
-    if(students[0].courseName !== req.body.courseName) {
+    if (students[0].courseName !== req.body.courseName) {
       return res.send({
         success: false,
         message: "You are not enroll in this course!",
@@ -212,6 +212,32 @@ exports.verifyEnrollNumber = async (req, res) => {
       success: true,
       message: "Student details fetched successfully",
       data: students,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.deleteStudent = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+
+    const existingStudent = await Student.findById(studentId);
+    if (!existingStudent) {
+      return res.send({
+        success: false,
+        message: "Student not found!",
+      });
+    }
+
+    await Student.findByIdAndRemove(studentId);
+
+    return res.send({
+      success: true,
+      message: "Student deleted successfully",
     });
   } catch (error) {
     return res.send({
