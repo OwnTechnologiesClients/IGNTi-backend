@@ -1,6 +1,9 @@
 const ExamSet = require("../models/examSetModel");
 const Course = require("../models/courseModel");
-const mongoose = require("mongoose");
+const ResultSet = require("../models/resultSetModel");
+const FinalResult = require("../models/finalResultModel");
+const Student = require("../models/studentModel");
+const studentExtraModel = require("../models/studentExtraModel");
 
 // ADD-EXAM-SET
 exports.addExamSet = async (req, res) => {
@@ -308,12 +311,38 @@ exports.deleteExamSet = async (req, res) => {
       courseName: req.body.courseName,
     });
 
-    if (deleteResult.deletedCount === 0) {
-      return res.send({
-        success: false,
-        message: `Invalid Course name!`,
-      });
+    await ResultSet.deleteMany({
+      courseName: req.body.courseName,
+    });
+
+    await FinalResult.deleteMany({
+      courseName: req.body.courseName,
+    });
+
+    const students = await Student.find({ courseName: req.body.courseName });
+
+    if (students.length !== 0) {
+      for (let i = 0; i < students.length; i++) {
+        req.body.studentName = students[i].studentName;
+        req.body.email = students[i].email;
+        req.body.fatherName = students[i].fatherName;
+        req.body.dateOfBirth = students[i].dateOfBirth;
+        req.body.mobileNumber = students[i].mobileNumber;
+        req.body.city = students[i].city;
+        req.body.state = students[i].state;
+        req.body.pincode = students[i].pincode;
+        req.body.address = students[i].address;
+        req.body.courseName = students[i].courseName;
+        req.body.imageFile = students[i].imageFile;
+        req.body.enrollNo = students[i].enrollNo;
+        const set = new studentExtraModel(req.body);
+        await set.save();
+      }
     }
+
+    const deleteStudent = await Student.deleteMany({
+      courseName: req.body.courseName,
+    });
 
     return res.send({
       success: true,
