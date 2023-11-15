@@ -21,9 +21,11 @@ const multerStorage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     // const uniqueSuffix = Date.now();
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const ext = file.mimetype.split("/")[1];
     // cb(null, uniqueSuffix+file.originalname);
-    cb(null, `files-admin-${Date.now()}.jpg`);
+    // cb(null, `files-admin-${Date.now()}.jpg`);
+    cb(null, `files-admin-${uniqueSuffix}.${ext}`);
   },
 });
 
@@ -35,14 +37,16 @@ const multerFilter = (req, file, cb) => {
   ) {
     cb(null, true);
   } else {
-    cb(new Error("Not a Image File!!"), false);
+    cb(null, false);
   }
 };
+
 
 const upload = multer({
   storage: multerStorage,
   fileFilter: multerFilter,
 });
+
 
 // STUDENT-REGISTRATION
 // router.route("/register").post(registerStudent);
@@ -61,6 +65,15 @@ router.post("/register", upload.single("fileName"), async (req, res) => {
       return res.send({
         success: false,
         message: "Contact No. is already registered with us!",
+      });
+    }
+
+    // console.log(req.file);
+
+    if(req.file === undefined) {
+      return res.send({
+        success: false,
+        message: "Please select image File",
       });
     }
     

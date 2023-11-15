@@ -1,5 +1,7 @@
 const Student = require("../models/studentModel");
 const jwt = require("jsonwebtoken");
+const fs = require('fs/promises');
+const path = require('path');
 
 // STUDENT-REGISTRATION
 exports.registerStudentByEmail = async (req, res) => {
@@ -232,6 +234,9 @@ exports.deleteStudent = async (req, res) => {
         message: "Student not found!",
       });
     }
+
+    const filePath = path.join(__dirname, '../../public', existingStudent.imageFile);
+    await fs.unlink(filePath);
 
     await Student.findByIdAndRemove(studentId);
 
