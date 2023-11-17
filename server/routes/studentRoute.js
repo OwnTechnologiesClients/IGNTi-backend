@@ -11,6 +11,7 @@ const {
   verifyEnrollNumber,
   registerStudentByEnroll,
   deleteStudent,
+  changeEnroll,
 } = require("../controllers/studentController");
 const multer = require("multer");
 const router = express.Router();
@@ -125,6 +126,8 @@ router.route("/get-student-all-course").post(allStudentCourse);
 router.route("/verify-student").post(verifyEnrollNumber);
 
 router.route("/delete-student-by-id/:id").delete(deleteStudent);
+
+router.route("/change-status").post(changeEnroll);
 
 
 

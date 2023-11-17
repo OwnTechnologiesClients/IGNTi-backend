@@ -51,6 +51,10 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+    },
+    authorized: {
+      type: Boolean,
+      default: true,
     }
   },
   {

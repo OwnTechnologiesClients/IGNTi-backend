@@ -251,3 +251,36 @@ exports.deleteStudent = async (req, res) => {
     });
   }
 };
+
+exports.changeEnroll = async (req, res) => {
+  try {
+    const studentEnroll = req.body.enrollNo;
+
+    const existingStudent = await Student.findOne({enrollNo: studentEnroll});
+    if (!existingStudent) {
+      return res.send({
+        success: false,
+        message: "Student not found!",
+      });
+    }
+
+    if(existingStudent.authorized) {
+      existingStudent.authorized = false;
+    }
+    else {
+      existingStudent.authorized = true;
+    }
+
+    await existingStudent.save();
+
+    return res.send({
+      success: true,
+      message: "Status Changed",
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};

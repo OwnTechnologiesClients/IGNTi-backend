@@ -79,6 +79,43 @@ exports.getResultSet = async (req, res) => {
   }
 };
 
+
+exports.getResult = async (req, res) => {
+  try {
+    const courseExists = await ResultSet.find({
+      courseName: req.body.courseName,
+    });
+    if (courseExists.length == 0) {
+      return res.send({
+        success: false,
+        message: `Invalid Course`,
+      });
+    }
+
+    const resultExists = await ResultSet.find({
+      semesterNumber: req.body.semesterNumber,
+      courseName: req.body.courseName,
+    }).distinct("studentId");
+    if (resultExists.length == 0) {
+      return res.send({
+        success: false,
+        message: `Invalid Semester No.`,
+      });
+    }
+
+    return res.send({
+      success: true,
+      message: `Student IDs fetched successfully for ${req.body.courseName} - ${req.body.semesterNumber} semester`,
+      data: resultExists,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 // SET-EXAM-SET-BY-ID
 exports.getResultSetById = async (req, res) => {
   try {
