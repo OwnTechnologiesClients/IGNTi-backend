@@ -85,20 +85,19 @@ exports.getCourse = async (req, res) => {
 // GET-ALL-COURSE-NAME
 exports.getCourseName = async (req, res) => {
   try {
-    const courses = await Course.find({}, "courseName"); // Only retrieve the courseName field
+    const courses = await Course.find({}, "courseName");
+
+    const durations = await Course.find({}, "duration");
 
     const courseNames = courses.map((course) => course.courseName);
-    // const courseExists = await Course.findOne({ courseName: req.body.courseName });
-    // if (!courseExists) {
-    //   return res.send({
-    //     success: false,
-    //     message: "Course not found",
-    //   });
-    // }
+
+    const duration = durations.map((durationData) => durationData.duration);
+
     return res.send({
       success: true,
       message: "Courses fetched successfully",
       data: courseNames,
+      data2: duration,
     });
   } catch (error) {
     return res.send({
