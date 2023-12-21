@@ -12,7 +12,6 @@ const notificationSchema = new mongoose.Schema(
     },
     youtubeLink: {
       type: String,
-      required: true,
     },
   },
   {
