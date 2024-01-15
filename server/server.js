@@ -42,7 +42,7 @@ app.use("/api/subjects", subjectRoute);
 app.use("/api/examSets", examSetRoute);
 app.use("/api/resultSets", resultSetRoute);
 app.use("/api/notification", notificationRoute);
-
+  
 const dirname = path.resolve();
 app.use('/public', express.static(path.join(dirname, '/public')))
 
