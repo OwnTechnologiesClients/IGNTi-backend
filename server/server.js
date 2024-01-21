@@ -22,6 +22,7 @@ app.use(express.json());
 dotenv.config({ path: "./server/config.env" });
 
 const PORT = process.env.PORT || 8000;
+const AWS_URI = process.env.AWS_URI;
 
 // Database connection
 connectionDB();
@@ -47,5 +48,5 @@ const dirname = path.resolve();
 app.use('/public', express.static(path.join(dirname, '/public')))
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on ${PORT}`);
 });
