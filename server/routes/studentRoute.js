@@ -78,13 +78,13 @@ router.post("/register", upload.single("fileName"), async (req, res) => {
 
     req.body.imageFile = req.file.filename;
 
-    const course = await EnrollNumber.findOne();
-    req.body.enrollNo = course.enNumber;
-    let enNumber = parseInt(course.enNumber, 10);
-    enNumber += 1;
-    const enNumberStr = enNumber.toString().padStart(8, "0");
-    course.enNumber = enNumberStr;
-    await course.save();
+    // const course = await EnrollNumber.findOne();
+    // req.body.enrollNo = course.enNumber;
+    // let enNumber = parseInt(course.enNumber, 10);
+    // enNumber += 1;
+    // const enNumberStr = enNumber.toString().padStart(8, "0");
+    // course.enNumber = enNumberStr;
+    // await course.save();
 
     const student = new Student(req.body);
     await student.save();

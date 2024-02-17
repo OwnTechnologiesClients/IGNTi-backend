@@ -50,7 +50,7 @@ const userSchema = mongoose.Schema(
     enrollNo: {
       type: String,
       required: true,
-      unique: true,
+      // unique: true,
     },
     authorized: {
       type: Boolean,
