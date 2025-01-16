@@ -19,16 +19,10 @@ app.use(cors());
 //Get req.body in JSON format
 app.use(express.json());
 
-// app.use(cors({
-//   origin: '*',  // Replace with your frontend's URL
-// }));
-
-// const cors = require('cors');
 app.use(cors({
-  origin: 'http://localhost:3005',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
-  credentials: true, // If cookies or authentication are involved
+  origin: '*',  // Replace with your frontend's URL
 }));
+
 
 // Secret Info
 dotenv.config({ path: "./server/config.env" });
