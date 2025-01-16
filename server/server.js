@@ -13,7 +13,10 @@ const notificationRoute = require("./routes/notificationRoute");
 const app = express();
 
 // Allow cross-origin-policy
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: '*',  // Replace with your frontend's URL
+}));
 
 //Get req.body in JSON format
 app.use(express.json());
