@@ -23,7 +23,7 @@ app.use(express.json());
 //   origin: '*',  // Replace with your frontend's URL
 // }));
 
-const cors = require('cors');
+// const cors = require('cors');
 app.use(cors({
   origin: 'http://localhost:3005',
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
