@@ -13,13 +13,15 @@ const notificationRoute = require("./routes/notificationRoute");
 const app = express();
 
 // Allow cross-origin-policy
-// app.use(cors());
-app.use(cors({
-  origin: '*',  // Replace with your frontend's URL
-}));
+app.use(cors());
+
 
 //Get req.body in JSON format
 app.use(express.json());
+
+app.use(cors({
+  origin: '*',  // Replace with your frontend's URL
+}));
 
 // Secret Info
 dotenv.config({ path: "./server/config.env" });
@@ -46,7 +48,7 @@ app.use("/api/subjects", subjectRoute);
 app.use("/api/examSets", examSetRoute);
 app.use("/api/resultSets", resultSetRoute);
 app.use("/api/notification", notificationRoute);
-  
+
 const dirname = path.resolve();
 app.use('/public', express.static(path.join(dirname, '/public')))
 
