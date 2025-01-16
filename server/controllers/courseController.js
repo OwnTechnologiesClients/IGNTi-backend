@@ -1,7 +1,9 @@
 const Course = require("../models/courseModel");
+const ExamSets = require("../models/examSetModel");
 const ExtraCourse = require("../models/extraCourseModel");
 const studentExtraModel = require("../models/studentExtraModel");
 const studentModel = require("../models/studentModel");
+
 
 // ADD-COURSE
 exports.addCourse = async (req, res) => {
@@ -82,6 +84,9 @@ exports.getCourse = async (req, res) => {
   }
 };
 
+
+
+
 // GET-ALL-COURSE-NAME
 exports.getCourseName = async (req, res) => {
   try {
@@ -106,6 +111,48 @@ exports.getCourseName = async (req, res) => {
     });
   }
 };
+
+
+
+// GET-ALL-EXAM-SETS
+exports.getExamSets = async (req, res) => {
+  console.log("====>>>>>>");
+  try {
+    const courses = await ExamSets.find();
+    //const courseNames = courses.map((course) => course.subjectName);
+
+    return res.send({
+      success: true,
+      message: "Subject fetched successfully",
+      data: courses,
+      // data2: duration,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.setPreviousExamQuestions = async (req, res) => {
+  const examSetExists = await ExamSets.findOne({
+    courseName: req.body.courseName,
+    semesterNumber: req.body.semesterNumber,
+    subjectName: req.body.subjectName,
+  });
+  //------------------------------
+
+  examSetExists.questions = req.body.questions;
+  await examSetExists.save();
+  return res.send({
+    success: true,
+    message: `Questions added successfully in )`,
+  });
+
+}
+
+
 
 exports.updateCourse = async (req, res) => {
   try {
