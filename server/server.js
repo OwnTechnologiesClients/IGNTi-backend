@@ -27,7 +27,7 @@ app.use(cors({
 // Secret Info
 dotenv.config({ path: "./server/config.env" });
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 9000;
 const AWS_URI = process.env.AWS_URI;
 
 // Database connection
